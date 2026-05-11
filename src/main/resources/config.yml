@@ -1,0 +1,17 @@
+#     _               _    _____     _
+#    | |   _   _  ___| | _|_   _|_ _| |__
+#    | |  | | | |/ __| |/ / | |/ _` | '_ \
+#    | |__| |_| | (__|   <  | | (_| | |_) |
+#    |_____\__,_|\___|_|\_\ |_|\__,_|_.__/
+#    by PattyXDHD
+
+useChatFormat: true
+useColorTranslate: true
+# patchholder -> %chatPrefix%, %playerName%, %message%, %ping%, %displayName%, %group%
+chatFormat: '%chatPrefix%%playerName% &8\xbb &7%message%'
+# update automatically the Tablist
+autoUpdate: true
+# format -> "group;tabPrefix;chatPrefix"
+prefixes:
+  - 'owner;&4Owner &7\xbb &4;&4Owner &7- &4'
+  - 'default;&7Player \xbb ;&7Player - '

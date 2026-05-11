@@ -1,0 +1,11 @@
+name: LuckTab
+author: PattyXDHD
+version: 1.2.2
+main: de.pattyxdhd.lucktab.LuckTab
+depend:
+  - LuckPerms
+
+commands:
+  lucktabreload:
+    aliases:
+      - ltr
