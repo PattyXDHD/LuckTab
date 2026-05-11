@@ -20,7 +20,6 @@ public class UpdateListener {
         }catch (Exception ignored){
             ignored.printStackTrace();
         }
-
     }
 
 }

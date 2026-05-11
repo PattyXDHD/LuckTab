@@ -16,8 +16,4 @@ public class JoinListener implements Listener {
         PlayerConverter.setTabPrefix(player);
     }
 
-
-
-
-
 }

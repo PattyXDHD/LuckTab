@@ -98,11 +98,8 @@ public class ConfigManager {
         save();
     }
 
-
-
     public boolean exist(final String path){
         return fileConfiguration.isSet(path);
     }
-
 
 }

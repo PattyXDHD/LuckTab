@@ -95,7 +95,6 @@ public class LuckTab extends JavaPlugin {
     }
 
     private void loadNMS(){
-//        String version = getServer().getClass().getPackage().getName().replace(".", "-").split("-")[3];
         String version = Bukkit.getVersion();
         log("Der Server läuft auf der Version §e" + version + "§7.");
         nms = new BetterNMS();

@@ -7,5 +7,4 @@ public class Data {
     @Getter
     private static final String prefix = "§8▌ §bLuckTab §8➡ §7";
 
-
 }
