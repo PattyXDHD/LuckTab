@@ -2,6 +2,7 @@ name: LuckTab
 author: PattyXDHD
 version: 1.2.2
 main: de.pattyxdhd.lucktab.LuckTab
+api-version: 1.13
 depend:
   - LuckPerms
 

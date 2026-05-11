@@ -8,10 +8,10 @@
 useChatFormat: true
 useColorTranslate: true
 # patchholder -> %chatPrefix%, %playerName%, %message%, %ping%, %displayName%, %group%
-chatFormat: '%chatPrefix%%playerName% &8\xbb &7%message%'
+chatFormat: '%chatPrefix%%playerName% &8» &7%message%'
 # update automatically the Tablist
 autoUpdate: true
 # format -> "group;tabPrefix;chatPrefix"
 prefixes:
-  - 'owner;&4Owner &7\xbb &4;&4Owner &7- &4'
-  - 'default;&7Player \xbb ;&7Player - '
+  - 'owner;&4Owner &7» &4;&4Owner &7- &4'
+  - 'default;&7Player » ;&7Player - '
