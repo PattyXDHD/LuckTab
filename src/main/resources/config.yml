@@ -5,13 +5,48 @@
 #    |_____\__,_|\___|_|\_\ |_|\__,_|_.__/
 #    by PattyXDHD
 
+# usage of the ChatEvent (disable it if you use another ChatPlugin)
 useChatFormat: true
+
+# Color permissions below
 useColorTranslate: true
-# patchholder -> %chatPrefix%, %playerName%, %message%, %ping%, %displayName%, %group%
-chatFormat: '%chatPrefix%%playerName% &8» &7%message%'
+
+# patchHolder -> %name%, %message%, %ping%, %displayName%, %group%
+chatFormat: '%name% &8» &7%message%'
+
+# If no prefix has been set for the chat, it simply uses the one from the tab list.
+usePrefixFromTablist: true
+# If no prefix has been set for the chat, it simply uses the one from the tab list.
+useSuffixFromTablist: true
+
 # update automatically the Tablist
 autoUpdate: true
-# format -> "group;tabPrefix;chatPrefix"
-prefixes:
-  - 'owner;&4Owner &7» &4;&4Owner &7- &4'
-  - 'default;&7Player » ;&7Player - '
+
+#Permissions:
+#  For all "/lucktab ..." commands: lucktab.admin
+#  Chat Formats:
+#    - lucktab.chat.format.color
+#    - lucktab.chat.format.magic
+#    - lucktab.chat.format.bold
+#    - lucktab.chat.format.strikethrough
+#    - lucktab.chat.format.underline
+#    - lucktab.chat.format.italic
+#
+#
+#General Usage:
+#  To assign a prefix to a group:
+#    /lp group default meta setprefix 100 "Your Prefix§e"
+#     -> the *100* is the weight of the Prefix. You can ignore that.
+#  To assign a chat-prefix to a group:
+#    /lp group default meta set chatprefix "Your Chat-Prefix§e"
+#
+#  To assign a suffix to a group:
+#    /lp group default meta setsuffix 100 "Your Suffix"
+#      -> the *100* is the weight of the Suffix. You can ignore that.
+#  To assign a chat-suffix to a group:
+#    /lp group default meta set chatsuffix "Your Chat-Suffix"
+#
+#  To sort the groups in the player list, you need to set the group weight:
+#    /lp group default setweight 300
+#      (300=onBottom, 200=inMiddle, 100=onTop)"
+#       -> higher number = lower position"

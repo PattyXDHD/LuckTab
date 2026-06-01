@@ -1,12 +1,11 @@
 name: LuckTab
 author: PattyXDHD
-version: 1.2.2
+version: 2.0.0
 main: de.pattyxdhd.lucktab.LuckTab
 api-version: 1.13
 depend:
   - LuckPerms
 
 commands:
-  lucktabreload:
-    aliases:
-      - ltr
+  lucktab:
+    permission: lucktab.admin

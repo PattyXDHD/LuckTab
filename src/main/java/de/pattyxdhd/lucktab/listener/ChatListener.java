@@ -1,7 +1,8 @@
 package de.pattyxdhd.lucktab.listener;
 
 import de.pattyxdhd.lucktab.LuckTab;
-import de.pattyxdhd.lucktab.utils.PlayerConverter;
+import de.pattyxdhd.lucktab.nms.BetterNMS;
+import de.pattyxdhd.lucktab.utils.UserObject;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,20 +13,26 @@ import java.util.regex.Pattern;
 public class ChatListener implements Listener {
 
     @EventHandler
-    public void onChat(final AsyncPlayerChatEvent event){
-        final String message = event.getMessage().replace("%", "%%");
+    public void onChat(final AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        UserObject userObject = UserObject.getUserObject(player.getUniqueId());
+        String message = event.getMessage().replace("%", "%%");
+        String chatPrefix = userObject.getChatPrefix();
+        String chatSuffix = userObject.getChatSuffix();
 
-        if(LuckTab.getConfigManager().exist("chatFormat")){
+        event.setMessage(translateColorCodes(event.getPlayer(), message));
 
-            event.setFormat(LuckTab.getConfigManager().getString("chatFormat").formatColors()
-                    .replace("%chatPrefix%", PlayerConverter.getChatPrefix(event.getPlayer()))
-                    .replace("%playerName%", event.getPlayer().getName())
-                    .replace("%message%", translateColorCodes(event.getPlayer(), message))
-                    .replace("%ping%", LuckTab.getNms().getPing(event.getPlayer()) + "ms")
+        String format = LuckTab.getInstance().getConfig().getString("chatFormat", "%name% &8» &7%message%");
+        if (format != null) {
+            format = format
+                    .replace("&", "§")
+                    .replace("%name%", chatPrefix + "%1$s" + chatSuffix)
+                    .replace("%message%", translateColorCodes(event.getPlayer(), "%2$s"))
+                    .replace("%ping%", BetterNMS.getPing(player) + "ms")
                     .replace("%displayName%", event.getPlayer().getDisplayName())
-                    .replace("%group%", PlayerConverter.getGroup(event.getPlayer())));
+                    .replace("%group%", userObject.getGroup());
+            event.setFormat(format);
         }
-
     }
 
     private static final Pattern chatColorPattern = Pattern.compile("(?i)&([0-9A-FR])");
@@ -36,7 +43,7 @@ public class ChatListener implements Listener {
     private static final Pattern chatItalicPattern = Pattern.compile("(?i)&([O])");
 
     public static String translateColorCodes(final Player player, final String message) {
-        if(!(LuckTab.getConfigManager().getBoolean("useColorTranslate")) && (LuckTab.getConfigManager().exist("useColorTranslate"))){
+        if (!LuckTab.getInstance().getConfig().getBoolean("useColorTranslate", true)) {
             return message;
         }
         String newstring = message;

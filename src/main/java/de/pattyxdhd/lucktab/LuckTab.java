@@ -1,28 +1,24 @@
 package de.pattyxdhd.lucktab;
 
-import com.google.common.collect.Lists;
-import de.pattyxdhd.lucktab.commands.PluginReloadCommand;
-import de.pattyxdhd.lucktab.config.ConfigManager;
+import de.pattyxdhd.lucktab.commands.LuckTabCommand;
 import de.pattyxdhd.lucktab.data.Data;
 import de.pattyxdhd.lucktab.listener.ChatListener;
 import de.pattyxdhd.lucktab.listener.JoinListener;
+import de.pattyxdhd.lucktab.listener.QuitListener;
 import de.pattyxdhd.lucktab.listener.UpdateListener;
-import de.pattyxdhd.lucktab.nms.BetterNMS;
-import de.pattyxdhd.lucktab.nms.NMS;
-import de.pattyxdhd.lucktab.utils.PlayerConverter;
 import de.pattyxdhd.lucktab.utils.UserObject;
 import lombok.Getter;
 import net.luckperms.api.LuckPerms;
-import net.luckperms.api.event.user.UserDataRecalculateEvent;
+import net.luckperms.api.event.EventSubscription;
+import net.luckperms.api.event.node.NodeMutateEvent;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 public class LuckTab extends JavaPlugin {
 
@@ -30,60 +26,59 @@ public class LuckTab extends JavaPlugin {
     private static LuckTab instance;
 
     @Getter
-    private LuckPerms luckPermsApi;
+    private static LuckPerms luckPermsApi;
 
-    @Getter
-    private static ConfigManager configManager;
-
-    @Getter
-    private static List<UserObject> userObjects = Lists.newArrayList();
-
-    @Getter
-    private static NMS nms;
+    private EventSubscription<NodeMutateEvent> nodeMutateSubscription;
 
     @Override
     public void onEnable() {
-
         instance = this;
-        configManager = new ConfigManager(this).copyDefaults();
 
-        loadNMS();
+        loadConfig();
         loadLuckPerms();
+        reloadUserObjects();
         loadListener(Bukkit.getPluginManager());
         loadCommands();
-        loadUserObjects();
 
-        log("§aPlugin geladen.");
-        log("§9Version: §bv" + getDescription().getVersion());
+        String version = Bukkit.getVersion();
+
+        Bukkit.getConsoleSender().sendMessage("");
+        Bukkit.getConsoleSender().sendMessage("  §b    ___");
+        Bukkit.getConsoleSender().sendMessage("  §b|    |    §bLuckTab §2v" + getDescription().getVersion());
+        Bukkit.getConsoleSender().sendMessage("  §b|___ |    §8Running on " + version);
+        Bukkit.getConsoleSender().sendMessage("");
     }
 
     @Override
     public void onDisable() {
-
-    }
-
-    private void loadListener(final PluginManager pluginManager){
-        pluginManager.registerEvents(new JoinListener(), this);
-        if(configManager.getBoolean("useChatFormat") && configManager.exist("useChatFormat")){
-            pluginManager.registerEvents(new ChatListener(), this);
+        if (nodeMutateSubscription != null) {
+            nodeMutateSubscription.close();
+            nodeMutateSubscription = null;
         }
+        Bukkit.getScheduler().cancelTasks(this);
+
+        log("§7Disabling LuckTab v" + getDescription().getVersion());
     }
 
-    private void loadCommands(){
-        getCommand("lucktabreload").setExecutor(new PluginReloadCommand());
+    public void log(final String message) {
+        Bukkit.getConsoleSender().sendMessage(Data.getPrefix() + message);
     }
 
-    private void loadLuckPerms(){
+    public void loadConfig() {
+        saveDefaultConfig();
+    }
+
+    private void loadLuckPerms() {
         final Plugin luckPerms = Bukkit.getPluginManager().getPlugin("LuckPerms");
 
-        if(luckPerms != null && luckPerms.isEnabled()){
+        if (luckPerms != null && luckPerms.isEnabled()) {
             RegisteredServiceProvider<LuckPerms> provider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
             if (provider != null) {
                 luckPermsApi = provider.getProvider();
             }
 
-            if(configManager.getBoolean("autoUpdate") && configManager.exist("autoUpdate")){
-                getLuckPermsApi().getEventBus().subscribe(UserDataRecalculateEvent.class, UpdateListener::updateEvent);
+            if (getConfig().getBoolean("autoUpdate", true)) {
+                nodeMutateSubscription = getLuckPermsApi().getEventBus().subscribe(NodeMutateEvent.class, UpdateListener::onNodeMutate);
             }
 
             return;
@@ -94,36 +89,26 @@ public class LuckTab extends JavaPlugin {
         Bukkit.getPluginManager().disablePlugin(this);
     }
 
-    private void loadNMS(){
-        String version = Bukkit.getVersion();
-        log("Der Server läuft auf der Version §e" + version + "§7.");
-        nms = new BetterNMS();
-    }
-
-    private void loadUserObjects(){
-        List<String> list = getConfigManager().getStringList("prefixes");
-        AtomicInteger count = new AtomicInteger(1);
-
-        list.forEach(string -> {
-            getUserObjects().add(new UserObject(string).setId(count.getAndIncrement()));
+    private void reloadUserObjects() {
+        UserObject.getUserObjects().clear();
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            UserObject.getUserObjects().put(player.getUniqueId(), UserObject.convert(player));
         });
     }
 
-    public void log(final String message){
-        Bukkit.getConsoleSender().sendMessage(Data.getPrefix() + message);
+    private void loadListener(final PluginManager pluginManager) {
+        pluginManager.registerEvents(new JoinListener(), this);
+        pluginManager.registerEvents(new QuitListener(), this);
+
+        if (getConfig().getBoolean("useChatFormat", true)) {
+            pluginManager.registerEvents(new ChatListener(), this);
+        }
     }
 
-    public void reloadPluginConfig() {
-        reloadConfig();
-
-        configManager = new ConfigManager(this);
-
-        userObjects.clear();
-        loadUserObjects();
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerConverter.setTabPrefix(player);
-        }
+    private void loadCommands() {
+        PluginCommand luckTabCommand = getCommand("lucktab");
+        luckTabCommand.setExecutor(new LuckTabCommand());
+        luckTabCommand.setTabCompleter(new LuckTabCommand());
     }
 
 }
