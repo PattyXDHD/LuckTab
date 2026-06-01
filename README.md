@@ -54,6 +54,8 @@ To sort the groups in the player list, you need to set the group weight:<br>
 
 /lp group admin meta setprefix 100 "&4Admin &7» &4"
 /lp group adminsetweight 100
+
+/lp group admin meta set defaultchatcolor "&b&l"
 ```
 
 
