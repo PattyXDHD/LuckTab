@@ -22,7 +22,7 @@ useSuffixFromTablist: true
 # update automatically the Tablist
 autoUpdate: true
 
-#Permissions:
+# Permissions:
 #  For all "/lucktab ..." commands: lucktab.admin
 #  Chat Formats:
 #    - lucktab.chat.format.color
@@ -33,7 +33,7 @@ autoUpdate: true
 #    - lucktab.chat.format.italic
 #
 #
-#General Usage:
+# General Usage:
 #  To assign a prefix to a group:
 #    /lp group default meta setprefix 100 "Your Prefix§e"
 #     -> the *100* is the weight of the Prefix. You can ignore that.

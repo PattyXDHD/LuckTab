@@ -29,8 +29,9 @@ public class UserObject {
     private Integer weight;
     private String chatPrefix;
     private String chatSuffix;
+    private String defaultChatColor;
 
-    public UserObject(UUID uuid, String group, String prefix, String suffix, int weight, String chatPrefix, String chatSuffix) {
+    public UserObject(UUID uuid, String group, String prefix, String suffix, int weight, String chatPrefix, String chatSuffix, String defaultChatColor) {
         this.uuid = uuid;
         this.group = group;
         this.prefix = prefix;
@@ -38,6 +39,7 @@ public class UserObject {
         this.weight = weight;
         this.chatPrefix = chatPrefix;
         this.chatSuffix = chatSuffix;
+        this.defaultChatColor = defaultChatColor;
     }
 
     public String getTabPrefix() {
@@ -120,6 +122,15 @@ public class UserObject {
         }
     }
 
+    public UserObject setDefaultChatColor(String defaultChatColor){
+        this.defaultChatColor = defaultChatColor;
+        return this;
+    }
+
+    public String getDefaultChatColor(){
+        return this.defaultChatColor.replace('&', '§');
+    }
+
     public static UserObject getUserObject(UUID uuid) {
         return userObjects.get(uuid);
     }
@@ -171,6 +182,7 @@ public class UserObject {
 
         String chatPrefixValue = metaData.getMetaValue("chatprefix");
         String chatSuffixValue = metaData.getMetaValue("chatsuffix");
+        String chatColorValue = metaData.getMetaValue("defaultchatcolor");
 
         String chatPrefix;
         if (chatPrefixValue != null) {
@@ -186,7 +198,14 @@ public class UserObject {
             chatSuffix = "";
         }
 
-        return new UserObject(player.getUniqueId(), user.getPrimaryGroup(), highestPrefix, highestSuffix, groupWeight, chatPrefix, chatSuffix);
+        String chatColor;
+        if (chatColorValue != null) {
+            chatColor = chatColorValue;
+        } else {
+            chatColor = "";
+        }
+
+        return new UserObject(player.getUniqueId(), user.getPrimaryGroup(), highestPrefix, highestSuffix, groupWeight, chatPrefix, chatSuffix, chatColor);
     }
 
 }

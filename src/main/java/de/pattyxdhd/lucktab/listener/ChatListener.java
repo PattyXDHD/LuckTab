@@ -16,11 +16,12 @@ public class ChatListener implements Listener {
     public void onChat(final AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         UserObject userObject = UserObject.getUserObject(player.getUniqueId());
-        String message = event.getMessage().replace("%", "%%");
+        String message = event.getMessage();
         String chatPrefix = userObject.getChatPrefix();
         String chatSuffix = userObject.getChatSuffix();
+        String defaultChatColor = userObject.getDefaultChatColor();
 
-        event.setMessage(translateColorCodes(event.getPlayer(), message));
+        event.setMessage(translateColorCodes(event.getPlayer(), defaultChatColor + message));
 
         String format = LuckTab.getInstance().getConfig().getString("chatFormat", "%name% &8» &7%message%");
         if (format != null) {
